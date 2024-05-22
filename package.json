@@ -1,0 +1,14 @@
+{
+  "name": "idle-logout",
+  "version": "1.0.0",
+  "description": "Logout current session after being idle for set time",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aahlad Kethineedi",
+  "license": "ISC",
+  "dependencies": {
+    "rxjs": "^7.8.1"
+  }
+}
