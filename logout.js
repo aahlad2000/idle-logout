@@ -1,27 +1,57 @@
-import { debounceTime, fromEvent, interval, merge, switchMap } from 'rxjs';
+import { debounceTime, fromEvent, merge, switchMap } from "rxjs";
 
-const mouseMove$ = fromEvent(document, 'mousemove');
-const keyDown$ = fromEvent(document, 'keyDown');
-const scroll$ = fromEvent(document, 'scroll');
-const click$ = fromEvent(document, 'click');
-const change$ = fromEvent(document, 'change');
+class idleLogout extends HTMLElement {
+  constructor() {
+    checkAndLogout();
+  }
 
-const userActivity$ = merge(mouseMove$, keyDown$, scroll$, click$, change$);
+  logoutTime = 60000 * 5;
+  logoutUrl = '';
 
-const idle$ = userActivity$.pipe(
-    debounceTime(60000 * 5),
-    map(() => 'logout')
-);
+  get logoutTime() {
+    logoutTime = this.getAttribute('logout-time');
+  }
 
-idle$.subscribe(() => {
-    logout();
-})
+  set logoutTime(value) {
+    this.setAttribute('logout-time', value);
+  }
 
-function logout() {
-    console.log("Logging out as the user is inactive");
-    fetch("<enter logout URL here>");
+  get logoutUrl() {
+    logoutUrl = this.getAttribute('logout-url');
+  }
+
+  set logoutUrl(value) {
+    this.setAttribute('logout-url', value);
+  }
+
+  checkAndLogout() {
+    const mouseMove$ = fromEvent(document, "mousemove");
+    const keyDown$ = fromEvent(document, "keyDown");
+    const scroll$ = fromEvent(document, "scroll");
+    const click$ = fromEvent(document, "click");
+    const change$ = fromEvent(document, "change");
+
+    const userActivity$ = merge(mouseMove$, keyDown$, scroll$, click$, change$);
+
+    const idle$ = userActivity$.pipe(
+      debounceTime(logoutTime),
+      map(() => "logout")
+    );
+
+    idle$.subscribe(() => {
+      logout();
+    });
+
+    function logout() {
+      console.log("Inactivity detected, logging out session");
+      //Full endpoint for logout
+      fetch(logoutUrl);
+    }
+
+    userActivity$.pipe(
+      switchMap(() => timer(logoutTime).pipe(map(() => "logout")))
+    );
+  }
 }
 
-userActivity$.pipe(
-    switchMap(() => timer(60000 * 5).pipe(map(() => 'logout')))
-);
+customElements.define('idle-logout', idleLogout);
