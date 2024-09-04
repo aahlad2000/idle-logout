@@ -7,6 +7,7 @@ class idleLogout extends HTMLElement {
 
   logoutTime = 60000 * 5;
   logoutUrl = '';
+  authToken = '';
 
   get logoutTime() {
     logoutTime = this.getAttribute('logout-time');
@@ -22,6 +23,14 @@ class idleLogout extends HTMLElement {
 
   set logoutUrl(value) {
     this.setAttribute('logout-url', value);
+  }
+
+  get authToken() {
+    logoutUrl = this.getAttribute('auth-token');
+  }
+
+  set authToken(value) {
+    this.setAttribute('lauth-token', value);
   }
 
   checkAndLogout() {
